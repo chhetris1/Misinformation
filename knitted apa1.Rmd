@@ -1,27 +1,26 @@
 ---
-title             : "The title"
-shorttitle        : "Title"
+title             : "Exploring Vulnerability to Misinformation"
+shorttitle        : "Vulnerability to misinformation"
 
 author: 
-  - name          : "First Author"
+  - name          : "Sanjay Chheri"
     affiliation   : "1"
     corresponding : yes    # Define only one corresponding author
-    address       : "Postal address"
-    email         : "my@email.com"
+    address       : "1 Normal Ave, Upper Montclair, NJ 07043"
+    email         : "chhetris1@montclair.com"
     role:         # Contributorship roles (e.g., CRediT, https://casrai.org/credit/)
       - Conceptualization
       - Writing - Original Draft Preparation
       - Writing - Review & Editing
-  - name          : "Ernst-August Doelle"
-    affiliation   : "1,2"
+  - name          : "Dr. John Kulas"
+    affiliation   : "1"
     role:
       - Writing - Review & Editing
 
 affiliation:
   - id            : "1"
-    institution   : "Wilhelm-Wundt-University"
-  - id            : "2"
-    institution   : "Konstanz Business School"
+    institution   : "Montclair State University"
+  
 
 authornote: |
   Add complete departmental affiliations for each author here. Each new line herein must be indented, like this line.
@@ -45,7 +44,7 @@ abstract: |
   
   <!-- https://tinyurl.com/ybremelq -->
   
-keywords          : "keywords"
+keywords          : "misinformation", "vulnerability"
 wordcount         : "X"
 
 bibliography      : ["r-references.bib"]
@@ -65,7 +64,7 @@ output            : papaja::apa6_pdf
 
 ```{r setup, include = FALSE}
 library("papaja")
-r_refs("r-references.bib")
+r_refs("ref_misinfo" )
 ```
 
 ```{r analysis-preferences}
