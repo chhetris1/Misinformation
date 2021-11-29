@@ -1,0 +1,106 @@
+---
+title: "Who falls for Misinformation?"
+author: "Sanjay Chhetri"
+date: "11/28/2021"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(tidyverse, quietly = T)
+```
+
+## Data Source
+I obtained the dataset from a repository publicly shared by the authors of a published article. [Link to the article](https://doi.org/10.1016/j.dib.2020.106031)
+For this article, the authors used the dataset to run a Confirmatory Factor Analysis. The sample is entirely from Africa, by design. The dataset represents a total of 21 African countries.
+I used the dataset to run a multiple regression to find out what factors predict the subscription of COVID-related misinformation.
+
+``` {r dataset, echo = T}
+library(readxl)
+cad <- read_excel("covid_africa_data.xlsx")
+dim(cad)
+head(cad, 10)
+glimpse(cad)
+```
+
+The dataset was in csv file, which I downloaded and saved as an Excel worksheet. I then subsetted the dataset to include only the variables needed for my analysis. Two variables pertaining to the source of covid information and religious orientation could be included in the model but I opted not to use them. FOr the former, the questionnaire gave multiple choices on COVID information source and most participants chose various options. For religion,  vast majority chose Christianity and Islam, with only a handful with 'don't want to tell'/'other'/'neutral'. It would basically be comparing one religion vs another. 
+
+
+## Reshaping the dataset
+Here I select only the variables that are of use for my analysis. 
+```{r wrangling, echo =T}
+df1 <- cad %>% mutate(gender = factor(Gender), 
+         age_group = factor(`Age class`), 
+         education = factor(`Highest level of education`), 
+         familiarity = factor(Know_a_covid_patient)) %>%
+  select(gender, age_group, education,  familiarity, q1:q13)
+```
+
+
+
+## Data Wrangling
+Here I recategorieze some variables to make them more readable. 
+```{r rearranging variables, echo = TRUE}
+table(df1$age_group)
+# collapsing age class varible to three categories
+levels(df1$age_group) <- list("Youths" = c("Less than 18 years", "18 - 24 years", "25 - 29 years"), 
+                        "Adults" = c("30 - 34 years", "35 - 39 years", "40 - 49 years"), 
+                        "Elderly" = c("50 - 59 years", "60 - 69 years", "70 years and above"))
+sum(is.na(df1$age_group)) #checking missing values
+
+levels(df1$education) <- list("college_educated" = c("Tertiary education", "Post Graduate level"), 
+                              "No_college" = c("No formal education", "Primary/Basic education", "Secondary/high school/form 4/5 education"))
+
+sum(is.na(cad$`Highest level of education`))
+sum(is.na(df1$education))
+
+```
+Collapsing various age groups into three general groups made sense to see the age effect with better clarity. 
+Collapsing various education levels into two groups (college educated or not) facilitated a plain comparison. 
+
+## More Data Manipulation
+Here, I first convert the likert scale texts into their numerical equivalents as suggested by the data source. 
+Then I aggregate the misinformation related columns taking average.
+
+``` {r more wrangling, echo = TRUE}
+df1[df1 == "Strongly Disagree"] <- "0"
+df1[df1 == "Disagree"] <- "0"
+df1[df1 == "Neutral"] <- "1"
+df1[df1=="Agree"] <- "4"
+df1[df1=="Strongly Agree"] <- "4"
+head(df1)
+class(df1$q1)
+df1[, 5:17] <- lapply(df1[, 5:17], as.numeric)
+class(df1$q1)
+head(df1)
+df1$q <- rowMeans(subset(df1, select = q1:q13), na.rm = T)
+head(df1)
+
+df <- df1 %>% select(gender, age_group, education, familiarity, q )
+head(df)
+```
+Here, q is the outcome variable and represents the extent to which one is misinformed about COVID (subscribes to COVID related misinformation)
+## Regression
+
+``` {r regression, echo = TRUE}
+model <- lm(q~gender+age_group+education+familiarity, data = df)
+summary(model)
+```
+The regression model with 'q' as the outcome and gender, age_group, education, and familiarity as explanatory variables is significant, F(5, 557) = 5.015, p<0.001. The model explains less than 4% of the variance in the misinformation index (outcome), with adjusted R squared at 0.034. 
+Education is the only variable that significantly predicts the misinformation index. 
+
+## Some visualizations
+Let the plots speak!
+
+```{r data viz, echo = TRUE}
+require(gridExtra)
+p1 <- df %>% ggplot(aes(x=education, y=q))+ 
+ geom_boxplot()
+p2 <- df %>% ggplot(aes(age_group, y=q))+geom_boxplot()
+p3 <- ggplot(df, aes(gender, q,))+geom_boxplot()
+p4 <- ggplot(df, aes(familiarity, q))+geom_boxplot()
+grid.arrange(p1, p2, p3, p4, ncol =2)
+
+```
