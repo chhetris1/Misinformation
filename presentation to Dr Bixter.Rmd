@@ -1,13 +1,14 @@
 ---
 title: "Who falls for Misinformation?"
 author: "Sanjay Chhetri"
-date: "11/28/2021"
-output: html_document
+date: " `r Sys.Date()` "
+output:
+  pdf_document: default
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
-library(tidyverse, quietly = T)
 ```
 
 ## Data Source
@@ -15,8 +16,10 @@ I obtained the dataset from a repository publicly shared by the authors of a pub
 For this article, the authors used the dataset to run a Confirmatory Factor Analysis. The sample is entirely from Africa, by design. The dataset represents a total of 21 African countries.
 I used the dataset to run a multiple regression to find out what factors predict the subscription of COVID-related misinformation.
 
-``` {r dataset, echo = T}
+``` {r dataset, echo = T, warning = F}
+library(tidyverse, quietly = T)
 raw_data <- read_csv("covid_africa_data_untouched.csv")
+head(raw_data)
 names(raw_data) 
 renamed_data <- raw_data %>% 
   rename_with(.cols = 11:23, .fn = ~ paste0("q", 1:13)) %>%
@@ -86,9 +89,10 @@ Here, q is the outcome variable and represents the extent to which one is misinf
 
 ##What's the distribution of misinformation score (q)?
 
-```{r dv_check}
+```{r dv_check, echo= TRUE}
 ggplot(df, aes(q))+geom_histogram(color = "red", fill="blue")
 ```
+This is to glimpse the distribution of our DV. 
 
 ## Regression
 
@@ -106,7 +110,7 @@ Education is the only variable that significantly predicts the misinformation in
 model1 <- lm(q~gender+age_group+education+familiarity+familiarity:education, data = df)
 summary(model1)
 ```
-Looks like there is not. 
+Looks like there is not any interaction effect. 
 
 
 ## Some visualizations
@@ -139,4 +143,5 @@ df2 %>% ggplot(aes(x=age, y = q, color = gender))+
 
 ```
 
+With imagined ages, expecting to see any tangible relationship is futile. 
 
