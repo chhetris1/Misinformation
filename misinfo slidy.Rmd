@@ -2,7 +2,7 @@
 title: "Who falls for Misinformation?"
 author: "Sanjay Chhetri"
 date: "11/28/2021"
-output: html_document
+output: slidy_presentation
 ---
 
 ```{r setup, include=FALSE}
@@ -125,7 +125,7 @@ grid.arrange(p1, p2, p3, p4, ncol =2)
 
 ##Figment of Imagination
 
-If we had a continuous/descrete predictor such as age, visualization would be more fun.
+If we had a continuous/descrete predictor such as age, visualization would be more fun
 
 ```{r imagined_stuff, echo = TRUE}
 df2 <- df
