@@ -17,8 +17,7 @@ I used the dataset to run a multiple regression to find out what factors predict
 
 ``` {r dataset, echo = T}
 raw_data <- read_csv("covid_africa_data_untouched.csv")
-head(raw_data)
-glimpse(raw_data) 
+names(raw_data) 
 renamed_data <- raw_data %>% 
   rename_with(.cols = 11:23, .fn = ~ paste0("q", 1:13)) %>%
   rename(familiarity = contains("Do you know anyone"))
@@ -37,7 +36,6 @@ df1 <- renamed_data %>% mutate(gender = factor(Gender),
          familiarity = factor(familiarity)) %>%
   select(gender, age_group, education,  familiarity, q1:q13)
 ```
-
 
 
 ## Data Wrangling
@@ -87,6 +85,7 @@ head(df)
 Here, q is the outcome variable and represents the extent to which one is misinformed about COVID (subscribes to COVID related misinformation)
 
 ##What's the distribution of misinformation score (q)?
+
 ```{r dv_check}
 ggplot(df, aes(q))+geom_histogram(color = "red", fill="blue")
 ```
@@ -101,6 +100,7 @@ The regression model with 'q' as the outcome and gender, age_group, education, a
 Education is the only variable that significantly predicts the misinformation index. With no significant difference between college and post-grad educated people. People with no college significantly differed in misinformation index. On average, people with no colleged measured 0.65 points higher in misinformation index compared to to the post graduated educated group. 
 
 ##Is there Any interaction effect?
+
 ```{r interaction, echo = TRUE}
 #check a suspect interaction
 model1 <- lm(q~gender+age_group+education+familiarity+familiarity:education, data = df)
@@ -110,6 +110,7 @@ Looks like there is not.
 
 
 ## Some visualizations
+
 Let the plots speak!
 
 ```{r data viz, echo = TRUE}
